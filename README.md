@@ -1,6 +1,6 @@
 # @nuxtjs/devalue
 
-Forked from  [devalue](https://github.com/Rich-Harris/devalue) to log errors on non serializable properties rather than Error.
+Forked from  [devalue](https://github.com/Rich-Harris/devalue) to log errors on non serializable properties rather than Error. And added support for objects with toJSON methods
 
 
 

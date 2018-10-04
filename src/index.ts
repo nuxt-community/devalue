@@ -109,7 +109,7 @@ export default function devalue(value: any, level = 'warn') {
 				return `new ${type}([${Array.from(thing).map(stringify).join(',')}])`;
 
 			default:
-			    const thingToSerialize = thing.toJSON ? thing.toJSON() : thing;
+				const thingToSerialize = thing.toJSON ? thing.toJSON() : thing;
 				const obj = `{${Object.keys(thingToSerialize).map(key => `${safeKey(key)}:${stringify(thingToSerialize[key])}`).join(',')}}`;
 				const proto = Object.getPrototypeOf(thingToSerialize);
 				if (proto === null) {

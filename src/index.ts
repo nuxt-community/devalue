@@ -52,7 +52,9 @@ export default function devalue(value: any, level = 'warn') {
 						proto !== null &&
 						Object.getOwnPropertyNames(proto).sort().join('\0') !== objectProtoOwnPropertyNames
 					) {
-						consola[level](`Cannot stringify arbitrary non-POJOs ${thing.constructor.name}`);
+						if (typeof thing.toJSON !== "function") {
+							consola[level](`Cannot stringify arbitrary non-POJOs ${thing.constructor.name}`);
+						}
 					} else if (Object.getOwnPropertySymbols(thing).length > 0) {
 						consola[level](`Cannot stringify POJOs with symbolic keys ${Object.getOwnPropertySymbols(thing)}`);
 					} else {
@@ -107,10 +109,11 @@ export default function devalue(value: any, level = 'warn') {
 				return `new ${type}([${Array.from(thing).map(stringify).join(',')}])`;
 
 			default:
-				const obj = `{${Object.keys(thing).map(key => `${safeKey(key)}:${stringify(thing[key])}`).join(',')}}`;
-				const proto = Object.getPrototypeOf(thing);
+			    const thingToSerialize = thing.toJSON ? thing.toJSON() : thing;
+				const obj = `{${Object.keys(thingToSerialize).map(key => `${safeKey(key)}:${stringify(thingToSerialize[key])}`).join(',')}}`;
+				const proto = Object.getPrototypeOf(thingToSerialize);
 				if (proto === null) {
-					return Object.keys(thing).length > 0
+					return Object.keys(thingToSerialize).length > 0
 						? `Object.assign(Object.create(null),${obj})`
 						: `Object.create(null)`;
 				}

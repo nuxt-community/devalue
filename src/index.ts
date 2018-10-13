@@ -4,12 +4,22 @@ const reserved = /^(?:do|if|in|for|int|let|new|try|var|byte|case|char|else|enum|
 const unsafe = /[<>\/\u2028\u2029]/g;
 const escaped: Record<string, string> = { '<': '\\u003C', '>' : '\\u003E', '/': '\\u002F', '\u2028': '\\u2028', '\u2029': '\\u2029' };
 const objectProtoOwnPropertyNames = Object.getOwnPropertyNames(Object.prototype).sort().join('\0');
+const defaultLogLevel = process.env.NUXT_ENV_DEVALUE_LOG_LEVEL || 'warn';
+const logLimit = parseInt(process.env.NUXT_ENV_DEVALUE_LOG_LIMIT) || 99;
 
 
-export default function devalue(value: any, level = 'warn') {
+export default function devalue(value: any, level = defaultLogLevel) {
 	const counts = new Map();
 
-	let n = 0;
+	let logNum = 0;
+
+	function log(message: string) {
+		if (logNum < logLimit) {
+			consola[level](message);
+			logNum+=1
+		}
+	}
+
 
 	function walk(thing: any) {
 		if (typeof thing === 'function') {
@@ -53,10 +63,10 @@ export default function devalue(value: any, level = 'warn') {
 						Object.getOwnPropertyNames(proto).sort().join('\0') !== objectProtoOwnPropertyNames
 					) {
 						if (typeof thing.toJSON !== "function") {
-							consola[level](`Cannot stringify arbitrary non-POJOs ${thing.constructor.name}`);
+							log(`Cannot stringify arbitrary non-POJOs ${thing.constructor.name}`);
 						}
 					} else if (Object.getOwnPropertySymbols(thing).length > 0) {
-						consola[level](`Cannot stringify POJOs with symbolic keys ${Object.getOwnPropertySymbols(thing)}`);
+						log(`Cannot stringify POJOs with symbolic keys ${Object.getOwnPropertySymbols(thing)}`);
 					} else {
 						Object.keys(thing).forEach(key => walk(thing[key]));
 					}

@@ -67,7 +67,7 @@ export default function devalue(value: any, level = defaultLogLevel) {
 							log(`Cannot stringify arbitrary non-POJOs ${thing.constructor.name}`);
 						}
 					} else if (Object.getOwnPropertySymbols(thing).length > 0) {
-						log(`Cannot stringify POJOs with symbolic keys ${Object.getOwnPropertySymbols(thing)}`);
+						log(`Cannot stringify POJOs with symbolic keys ${Object.getOwnPropertySymbols(thing).map(symbol => symbol.toString())}`);
 					} else {
 						Object.keys(thing).forEach(key => walk(thing[key]));
 					}

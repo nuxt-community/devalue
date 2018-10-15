@@ -4,6 +4,7 @@ const reserved = /^(?:do|if|in|for|int|let|new|try|var|byte|case|char|else|enum|
 const unsafe = /[<>\/\u2028\u2029]/g;
 const escaped: Record<string, string> = { '<': '\\u003C', '>' : '\\u003E', '/': '\\u002F', '\u2028': '\\u2028', '\u2029': '\\u2029' };
 const objectProtoOwnPropertyNames = Object.getOwnPropertyNames(Object.prototype).sort().join('\0');
+// workaround to disable warnings, see https://github.com/nuxt/nuxt.js/issues/4026 for details
 const defaultLogLevel = process.env.NUXT_ENV_DEVALUE_LOG_LEVEL || 'warn';
 const logLimit = parseInt(process.env.NUXT_ENV_DEVALUE_LOG_LIMIT) || 99;
 

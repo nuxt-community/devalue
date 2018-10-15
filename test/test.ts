@@ -92,8 +92,7 @@ describe('devalue', () => {
 		// 	assert.throws(() => devalue(foo));
 		// });
 		//
-		// it('throws for symbolic keys', () => {
-		// 	assert.throws(() => devalue({ [Symbol()]: null }));
-		// });
+		test('objects with symbolic keys', { [Symbol()]: null, 'key': 'val' }, '{key:"val"}');
+
 	});
 });

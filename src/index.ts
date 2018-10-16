@@ -120,11 +120,13 @@ export default function devalue(value: any, level = defaultLogLevel) {
 				return `new ${type}([${Array.from(thing).map(stringify).join(',')}])`;
 
 			default:
-				const thingToSerialize = thing.toJSON ? thing.toJSON() : thing;
-				const obj = `{${Object.keys(thingToSerialize).map(key => `${safeKey(key)}:${stringify(thingToSerialize[key])}`).join(',')}}`;
-				const proto = Object.getPrototypeOf(thingToSerialize);
+				if (thing.toJSON) {
+					return stringify(JSON.parse(thing.toJSON()));
+				}
+				const obj = `{${Object.keys(thing).map(key => `${safeKey(key)}:${stringify(thing[key])}`).join(',')}}`;
+				const proto = Object.getPrototypeOf(thing);
 				if (proto === null) {
-					return Object.keys(thingToSerialize).length > 0
+					return Object.keys(thing).length > 0
 						? `Object.assign(Object.create(null),${obj})`
 						: `Object.create(null)`;
 				}

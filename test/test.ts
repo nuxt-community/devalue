@@ -2,6 +2,9 @@ import * as assert from 'assert';
 import * as vm from 'vm';
 import devalue from '../src/index';
 
+
+
+
 describe('devalue', () => {
 	function test(name: string, input: any, expected: string) {
 		it(name, () => {
@@ -9,6 +12,17 @@ describe('devalue', () => {
 			assert.equal(actual, expected);
 		});
 	}
+
+	class toJSONTest {
+		private toJSONValue: any
+		constructor (toJSONValue: any) {
+			this.toJSONValue = toJSONValue;
+		}
+		toJSON () {
+			return this.toJSONValue;
+		}
+	}
+
 
 	describe('basics', () => {
 		test('number', 42, '42');
@@ -33,6 +47,13 @@ describe('devalue', () => {
 		test('Object', {foo: 'bar', 'x-y': 'z'}, '{foo:"bar","x-y":"z"}');
 		test('Set', new Set([1, 2, 3]), 'new Set([1,2,3])');
 		test('Map', new Map([['a', 'b']]), 'new Map([["a","b"]])');
+		test('toJSON Array', new toJSONTest('["a", "b", "c"]'), '["a","b","c"]');
+		test('toJSON Array (empty)', new toJSONTest('[]'), '[]');
+		test('toJSON Object', new toJSONTest('{"foo":"bar","x-y":"z"}'), '{foo:"bar","x-y":"z"}');
+		test('toJSON Object (deep)', new toJSONTest('{"foo":"bar","x-y": [1,2,{"a":"b"}]}'), '{foo:"bar","x-y":[1,2,{a:"b"}]}');
+		test('toJSON Boolean', new toJSONTest('true'), 'true');
+		test('toJSON Number', new toJSONTest('1'), '1');
+		test('toJSON String', new toJSONTest('"test"'), '"test"');
 	});
 
 	describe('cycles', () => {
@@ -75,6 +96,12 @@ describe('devalue', () => {
 			`</script><script src='https://evil.com/script.js'>alert('pwned')</script><script>`,
 			`"\\u003C\\u002Fscript\\u003E\\u003Cscript src='https:\\u002F\\u002Fevil.com\\u002Fscript.js'\\u003Ealert('pwned')\\u003C\\u002Fscript\\u003E\\u003Cscript\\u003E"`
 		);
+		test(
+			'toJSON Dangerous string',
+			new toJSONTest(`"</script><script src='https://evil.com/script.js'>alert('pwned')</script><script>"`),
+			`"\\u003C\\u002Fscript\\u003E\\u003Cscript src='https:\\u002F\\u002Fevil.com\\u002Fscript.js'\\u003Ealert('pwned')\\u003C\\u002Fscript\\u003E\\u003Cscript\\u003E"`
+		);
+
 	});
 
 	describe('misc', () => {

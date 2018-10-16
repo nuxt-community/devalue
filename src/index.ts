@@ -79,7 +79,6 @@ export default function devalue(value: any, level = defaultLogLevel) {
 	walk(value);
 
 	const names = new Map();
-
 	Array.from(counts)
 		.filter(entry => entry[1] > 1)
 		.sort((a, b) => b[1] - a[1])
@@ -121,7 +120,15 @@ export default function devalue(value: any, level = defaultLogLevel) {
 
 			default:
 				if (thing.toJSON) {
-					return stringify(JSON.parse(thing.toJSON()));
+					let json = thing.toJSON();
+					if (getType(json) === 'String') {
+						//try to parse
+						//because we can't see the different json string or plain string 
+						try {
+							json = JSON.parse(json)
+						} catch (e) {};
+					}
+					return stringify(json);
 				}
 				const obj = `{${Object.keys(thing).map(key => `${safeKey(key)}:${stringify(thing[key])}`).join(',')}}`;
 				const proto = Object.getPrototypeOf(thing);

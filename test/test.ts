@@ -2,9 +2,6 @@ import * as assert from 'assert';
 import * as vm from 'vm';
 import devalue from '../src/index';
 
-
-
-
 describe('devalue', () => {
 	function test(name: string, input: any, expected: string) {
 		it(name, () => {

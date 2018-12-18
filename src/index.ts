@@ -122,8 +122,7 @@ export default function devalue(value: any, level = defaultLogLevel) {
 				if (thing.toJSON) {
 					let json = thing.toJSON();
 					if (getType(json) === 'String') {
-						//try to parse
-						//because we can't see the different json string or plain string 
+						// Try to parse the returned data
 						try {
 							json = JSON.parse(json)
 						} catch (e) {};
@@ -134,7 +133,7 @@ export default function devalue(value: any, level = defaultLogLevel) {
 				const proto = Object.getPrototypeOf(thing);
 				if (proto === null) {
 					return Object.keys(thing).length > 0
-						? `Object.assign(Object.create(null),${obj})`
+						? `Object.assign(Object.create(null), ${obj})`
 						: `Object.create(null)`;
 				}
 

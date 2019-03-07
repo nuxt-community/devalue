@@ -146,7 +146,7 @@ export default function devalue(value: any, level = defaultLogLevel) {
 						return 'Object.create(null)';
 					}
 
-					return `Object.create(null,{${Object.keys(thing).map(key => `${safeKey(key)}:{writable:true,value:${stringify(thing[key])}}`).join(',')}})`;
+					return `Object.create(null,{${Object.keys(thing).map(key => `${safeKey(key)}:{writable:true,enumerable:true,value:${stringify(thing[key])}}`).join(',')}})`;
 				}
 
 				return `{${Object.keys(thing).map(key => `${safeKey(key)}:${stringify(thing[key])}`).join(',')}}`;

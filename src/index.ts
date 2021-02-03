@@ -204,6 +204,19 @@ export default function devalue(value: any, level = defaultLogLevel) {
 					break;
 
 				default:
+					if (thing && thing.toJSON) {
+						let json = thing.toJSON();
+						if (getType(json) === 'String') {
+							// Try to parse the returned data
+							try {
+								json = JSON.parse(json);
+							} catch (e) {
+								json = thing;
+							};
+						}
+						thing = json;
+					}
+
 					values.push(Object.getPrototypeOf(thing) === null ? 'Object.create(null)' : '{}');
 					Object.keys(thing).forEach(key => {
 						statements.push(`${name}${safeProp(key)}=${stringify(thing[key])}`);

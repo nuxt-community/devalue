@@ -35,7 +35,7 @@ export default function devalue(value: any, level = defaultLogLevel) {
 	}
 
 
-	function walk(thing: any) {
+	function walk(thing: any, parent:any, key:string, index:number) {
 		if (typeof thing === 'function') {
 			consola[level](`Cannot stringify a function ${thing.name}`)
 			return
@@ -60,15 +60,33 @@ export default function devalue(value: any, level = defaultLogLevel) {
 					return;
 
 				case 'Array':
-					thing.forEach(walk);
+					thing.forEach((item:any, index:number)=>{walk(item, parent, key, index)});
 					break;
 
 				case 'Set':
 				case 'Map':
-					Array.from(thing).forEach(walk);
+					Array.from(thing).forEach((item, index)=>{walk(item, parent,key, undefined)});
 					break;
 
 				default:
+					if (thing && thing.toJSON) {
+						let json = thing.toJSON();
+						if (getType(json) === 'String') {
+							// Try to parse the returned data
+							try {
+								json = JSON.parse(json);
+							} catch (e) {
+								json = thing;
+							};
+						}
+
+						if(typeof index !== 'undefined')
+							parent[key][index] = json;
+						else
+							parent[key] = json;
+						return;
+					}
+
 					const proto = Object.getPrototypeOf(thing);
 
 					if (
@@ -82,14 +100,14 @@ export default function devalue(value: any, level = defaultLogLevel) {
 					} else if (Object.getOwnPropertySymbols(thing).length > 0) {
 						log(`Cannot stringify POJOs with symbolic keys ${Object.getOwnPropertySymbols(thing).map(symbol => symbol.toString())}`);
 					} else {
-						Object.keys(thing).forEach(key => walk(thing[key]));
+						Object.keys(thing).forEach(function (key) { return walk(thing[key], thing, key, undefined); });
 					}
 
 			}
 		}
 	}
 
-	walk(value);
+	walk(value, undefined, undefined, undefined);
 
 	const names = new Map();
 	Array.from(counts)

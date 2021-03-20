@@ -24,6 +24,7 @@ const logLimit = parseInt(process.env.NUXT_ENV_DEVALUE_LOG_LIMIT) || 99;
 
 export default function devalue(value: any, level = defaultLogLevel) {
 	const counts = new Map();
+	const mapObjToJSON = new Map();
 
 	let logNum = 0;
 
@@ -70,14 +71,34 @@ export default function devalue(value: any, level = defaultLogLevel) {
 
 				default:
 					if (thing && thing.toJSON) {
-						let json = thing.toJSON();
-						if (getType(json) === 'String') {
-							// Try to parse the returned data
-							try {
-								json = JSON.parse(json);
-							} catch (e) {
-								json = thing;
-							};
+						//remove it from existing counts map so we can come here again to replace.
+						counts.delete(thing);
+
+						let json;
+						if( mapObjToJSON.has(thing) ){
+							json = mapObjToJSON.get(thing);
+
+							//increment the count as it used to do for "thing"
+							counts.set(json, counts.get(json) + 1);
+						}
+						else
+						{
+							json = thing.toJSON();
+							if (getType(json) === 'String') {
+								// Try to parse the returned data
+								try {
+									json = JSON.parse(json);
+								}
+								catch (e) {
+									json = thing;
+								}
+							}
+
+							//add to map object in case the object is referenced again
+							mapObjToJSON.set(thing, json);
+
+							//set the count first time
+							counts.set(json, 1)
 						}
 
 						if(typeof index !== 'undefined')

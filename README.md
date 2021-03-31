@@ -124,7 +124,7 @@ Using `new Function(code)` is akin to using indirect eval.
 
 ## License
 
-[LIL](LICENSE)
+[MIT](LICENSE)
 
 <!-- Refs -->
 [npm-version-src]: https://flat.badgen.net/npm/v/@nuxt/devalue/latest

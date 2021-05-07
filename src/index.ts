@@ -18,8 +18,8 @@ const escaped: Record<string, string> = {
 };
 const objectProtoOwnPropertyNames = Object.getOwnPropertyNames(Object.prototype).sort().join('\0');
 // workaround to disable warnings, see https://github.com/nuxt/nuxt.js/issues/4026 for details
-const defaultLogLevel = process.env.NUXT_ENV_DEVALUE_LOG_LEVEL || 'warn';
-const logLimit = parseInt(process.env.NUXT_ENV_DEVALUE_LOG_LIMIT) || 99;
+const defaultLogLevel = typeof process !== 'undefined' ? process.env.NUXT_ENV_DEVALUE_LOG_LEVEL || 'warn' : 'warn';
+const logLimit = typeof process !== 'undefined' ? parseInt(process.env.NUXT_ENV_DEVALUE_LOG_LIMIT) || 99 : 99;
 
 
 export default function devalue(value: any, level = defaultLogLevel) {
